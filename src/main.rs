@@ -1,13 +1,23 @@
 use crate::rotate::*;
 use std::env;
+use log::*;
 
 mod rotate;
 
 fn main() {
+	env_logger::init();
+	
 	let args : Vec<String> = env::args().collect();
 
 	// Check arg count and first argument	
-	if args.len() < 4 || args[1].to_lowercase() != "rotate" {
+	if args.len() < 4 {
+		warn!("Not enough arguments, expected 3 arguments");
+		print_help();
+		return;
+	}
+	
+	if args[1].to_lowercase() != "rotate" {
+		warn!("First argument should be 'rotate'");
 		print_help();
 		return;
 	}
@@ -19,6 +29,7 @@ fn main() {
 	};
 
 	if degrees < 0 || degrees > 3600  {
+		warn!("Expected rotation to be between 0 and 3600 degrees, parsed {} degrees", degrees);
 		print_help();
 		return;
 	}
@@ -34,12 +45,8 @@ fn main() {
 	match args[3].as_str() {
 		"forward" | "f" => rotate_steps(steps.try_into().unwrap(), Direction::Forward),
 		"backward" | "b" => rotate_steps(steps.try_into().unwrap(), Direction::Backward),
-		_ => print_help()
+		_ => { warn!("Rotation direction was {} which is not a valid value", args[3]); print_help(); }
 	}
-
-	//rotate_steps(128, Direction::Forward);
-	//rotate_steps(128, Direction::Backward);
-
 }
 
 fn print_help() {
