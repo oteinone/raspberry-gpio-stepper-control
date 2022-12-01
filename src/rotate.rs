@@ -12,6 +12,9 @@ const PIN4: u8 = 17;
 // Delay between commands to control board (motor specification states max 600 Hz so this should not be under 2!)
 const DELAY: u8 = 5;
 
+// How many steps is a full rotation
+//const ROTATION_STEP_COUNT: u16 = 512;
+
 // SEQUENCE Assumes that pins are connected right...
 const SEQUENCE: [[u8;4];8] = [
 	[1,0,0,0],
@@ -58,6 +61,10 @@ pub fn rotate_steps(steps: u16, direction: Direction) {
 		}
 	}
 
+}
+
+pub fn degrees_to_steps(degrees: u16) -> u16 {
+	return (degrees * 64) / 45; // (64/45) == (512/360)
 }
 
 fn run_step(pins: &mut [OutputPin;4], current_step: u8) {
