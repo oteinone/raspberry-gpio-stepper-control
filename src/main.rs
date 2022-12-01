@@ -4,6 +4,13 @@ use log::*;
 
 mod rotate;
 
+
+// Port numbers for control board ports 1-4
+const PIN1: u8 = 2;
+const PIN2: u8 = 3;
+const PIN3: u8 = 4;
+const PIN4: u8 = 17;
+
 fn main() {
 	env_logger::init();
 	
@@ -16,7 +23,7 @@ fn main() {
 		return;
 	}
 	
-	if args[1].to_lowercase() != "rotate" {
+	if args[1].to_lowercase() != "rotate" && args[1].to_lowercase() != "r" {
 		warn!("First argument should be 'rotate'");
 		print_help();
 		return;
@@ -35,10 +42,12 @@ fn main() {
 		return;
 	}
 
+	let pinconfig: [u8; 4] = [PIN1, PIN2, PIN3, PIN4];
+
 	match args[3].as_str() {
 		// We can safely unwrap here because we've checked that the value is [0, 3600]
-		"forward" | "f" => rotate_steps(degrees_to_steps(degrees.try_into().unwrap()), Direction::Forward),
-		"backward" | "b" => rotate_steps(degrees_to_steps(degrees.try_into().unwrap()), Direction::Backward),
+		"forward" | "f" => rotate_degrees(degrees.try_into().unwrap(), Direction::Forward, pinconfig),
+		"backward" | "b" => rotate_degrees(degrees.try_into().unwrap(), Direction::Backward, pinconfig),
 		_ => { warn!("Rotation direction was {} which is not a valid value", args[3]); print_help(); }
 	}
 }
